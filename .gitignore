@@ -1,3 +1,17 @@
-/assets/uploads/documents/*
-/assets/uploads/images/*
-/node_modules
+# Environnement
+.env
+.env.local
+.env.production
+
+# Node
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Uploads (si temporaires)
+app/uploads/*
+!app/uploads/.gitkeep
+
+# OS
+.DS_Store
+Thumbs.db
