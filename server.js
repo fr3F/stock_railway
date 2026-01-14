@@ -83,14 +83,22 @@ app.use((err, req, res, next) => {
 // ✅ Démarrer le serveur avec gestion améliorée
 const startServer = async () => {
   try {
+    // 🔍 DEBUG : Afficher les variables de connexion
+    console.log('🔍 Configuration de connexion:');
+    console.log('DB_HOST:', process.env.DB_HOST);
+    console.log('DB_PORT:', process.env.DB_PORT);
+    console.log('DB_NAME:', process.env.DB_NAME);
+    console.log('DB_USER:', process.env.DB_USER);
+    console.log('DB_PASSWORD:', process.env.DB_PASSWORD ? '****' : 'MANQUANT');
+    
     // ✅ Test de connexion à la base de données
     await sequelize.authenticate();
     console.log("✅ Connexion à la base de données établie");
 
     // ✅ Synchronisation conditionnelle selon l'environnement
     const syncOptions = process.env.NODE_ENV === 'production' 
-      ? { alter: false } // Pas de modification de schéma en production
-      : { alter: true };  // Autorisé en développement
+      ? { alter: false } 
+      : { alter: true };
     
     await sequelize.sync(syncOptions);
     console.log("✅ Base de données synchronisée");
@@ -107,7 +115,7 @@ const startServer = async () => {
   } catch (error) {
     console.error("❌ Erreur fatale lors du démarrage:", error);
     console.error("Stack trace:", error.stack);
-    process.exit(1); // Arrêter le processus en cas d'erreur critique
+    process.exit(1);
   }
 };
 

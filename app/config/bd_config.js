@@ -1,7 +1,7 @@
 const { Sequelize } = require('sequelize');
 
 const sequelize = new Sequelize(
-  process.env.DB_NAME || 'votre_base_locale',
+  process.env.DB_NAME || 'stage',
   process.env.DB_USER || 'root',
   process.env.DB_PASSWORD || '',
   {
@@ -14,6 +14,9 @@ const sequelize = new Sequelize(
       min: 0,
       acquire: 30000,
       idle: 10000
+    },
+    dialectOptions: {
+      connectTimeout: 60000
     }
   }
 );
