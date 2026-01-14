@@ -1,0 +1,56 @@
+const bcrypt = require('bcrypt');
+const jwt =  require('jsonwebtoken');
+const Utilisateur =  require('../models/utilisateur');
+const JWTStrategy = require('./strategies/JWTStrategy');
+const utilisateurRepository = require('./utilisateur.service');
+
+class AuthService{
+
+    constructor(strategy){
+        this.strategy = strategy;
+    }
+
+    async register(role,email_ut, mdp_ut){
+        const hashedMdp_ut = await bcrypt.hash(mdp_ut,8);        
+        const utilisateur =  await Utilisateur.create({role,email_ut,mdp_ut: hashedMdp_ut});
+        return utilisateur;
+    }
+
+    async login(email_ut, mdp_ut) {
+
+        const utilisateur = await Utilisateur.findOne({
+            where: { email_ut }
+        });
+
+    // Le rôle est déjà présent
+    const role = utilisateur.role;
+
+    const token = jwt.sign(
+        {
+        id: utilisateur.id_ut,
+        role: role
+        },
+        "dfgqsdf.dfq01DFdHGHjgf01mNt",
+        { expiresIn: '1h' } 
+    );
+
+    return {
+        utilisateur: {
+            id_ut: utilisateur.id_ut,
+            email_ut: utilisateur.email_ut,
+            role: role
+            },
+            token
+        };
+    }
+
+    async authenticate(token){
+        return this.strategy.authenticate(token,{secretOrkey:"dfgqsdf.dfq01DFdHGHjgf01mNt"});
+    }
+
+    async findUtilById(id){
+        return await utilisateurRepository.findUtilById(id);
+    }
+}
+
+module.exports = new AuthService(JWTStrategy);
