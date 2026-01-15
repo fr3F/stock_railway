@@ -2,6 +2,9 @@ const express = require('express');
 const router = express.Router();
 const mouvementController = require('../controller/mouvement.controller');
 const { authenticate } = require('../controller/Auth.controller');
+const { verifyToken } = require('../middleware/auth.middleware');
+
+router.use(verifyToken);
 
 router.post('/mouvement',authenticate,mouvementController.creerMouvement);
 router.get('/mouvement',mouvementController.listeMouvement);

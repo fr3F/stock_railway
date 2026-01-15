@@ -20,15 +20,20 @@ class AuthController{
     
     async login(req, res){
 
-        try {
-            const {utilisateur, token} = await AuthService.login(req.body.email_ut, req.body.mdp_ut);
-            console.log("utilisateur", utilisateur);
+      try {
+        const { email_ut, mdp_ut } = req.body;
 
-            res.status(200).json({utilisateur, token});   
-        } catch (error) {
-            res.status(400).json({error: error.message
-            })
+        if (!email_ut || !mdp_ut) {
+            return res.status(400).json({ error: 'Email et mot de passe requis' });
         }
+
+        const result = await AuthService.login(email_ut, mdp_ut, req);
+
+        res.json(result);
+    } catch (error) {
+        console.error('Erreur login:', error);
+        res.status(401).json({ error: error.message || 'Authentification échouée' });
+    }
     }
 
     async authenticate(req, res,next){

@@ -1,6 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const emplacementController = require('../controller/emplacement.controller');
+const { verifyToken } = require('../middleware/auth.middleware');
+
+router.use(verifyToken);
 
 router.post('/emplacement',emplacementController.creeremplacement)
 router.get('/emplacement',emplacementController.listeemplacement)

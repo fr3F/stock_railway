@@ -1,6 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const depotController = require('../controller/depot.controller');
+const { verifyToken } = require('../middleware/auth.middleware');
+
+router.use(verifyToken);
 
 router.post('/depot',depotController.creerDepot);
 router.get('/depot',depotController.listeDepot);
