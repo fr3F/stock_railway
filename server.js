@@ -17,6 +17,11 @@ const emplacementRoutes = require('./app/routes/emplacement.routes');
 
 const app = express();
 
+console.log('=== Variables d\'environnement ===');
+console.log('JWT_SECRET:', process.env.JWT_SECRET ? '✅ Chargé' : '❌ MANQUANT');
+console.log('DB_HOST:', process.env.DB_HOST);
+console.log('DB_NAME:', process.env.DB_NAME);
+
 app.use(helmet());
 app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 100 }));
 app.use(express.json({ limit: '10mb' }));

@@ -3,7 +3,6 @@ const jwt = require('jsonwebtoken');
 const Utilisateur = require('../models/utilisateur');
 const JWTStrategy = require('./strategies/JWTStrategy');
 const utilisateurRepository = require('./utilisateur.service');
-const { saveTokenContext } = require('../middleware/auth.middleware');
 
 class AuthService {
     constructor(strategy) {
@@ -38,6 +37,8 @@ class AuthService {
         
         //Vérifier que JWT_SECRET existe
         const jwtSecret = process.env.JWT_SECRET;
+        console.log("jwtSecret", jwtSecret);
+        
         
         if (!jwtSecret) {
             throw new Error('JWT_SECRET non configuré dans .env');
@@ -51,8 +52,6 @@ class AuthService {
             jwtSecret, 
             { expiresIn: '1h' } 
         );
-
-        saveTokenContext(token, req);
 
         return {
             utilisateur: {
