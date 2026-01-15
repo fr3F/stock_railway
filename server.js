@@ -22,7 +22,7 @@ console.log('JWT_SECRET:', process.env.JWT_SECRET ? '✅ Chargé' : '❌ MANQUAN
 console.log('DB_HOST:', process.env.DB_HOST);
 console.log('DB_NAME:', process.env.DB_NAME);
 
-app.use(helmet());
+app.use(helmet( ));
 app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 100 }));
 app.use(express.json({ limit: '10mb' }));
 app.use(cors({ origin: 'https://gestion-stock-front-peach.vercel.app', credentials: true }));
@@ -36,8 +36,13 @@ app.use('/api', mouvementRoutes);
 app.use('/api', utilisateurRoutes);
 app.use('/api', stockRoutes);
 app.use('/api', emplacementRoutes);
-app.use('/fichier', express.static(__dirname + '/app/uploads/'));
-
+app.use(
+  '/fichier',
+  helmet({
+    crossOriginResourcePolicy: { policy: "cross-origin" },
+  }),
+  express.static(__dirname + '/app/uploads/')
+);
 sequelize.authenticate()
   .then(() => sequelize.sync())
   .then(() => app.listen(process.env.PORT || 8080, () => console.log('🚀 OK')))

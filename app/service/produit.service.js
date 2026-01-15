@@ -38,10 +38,8 @@ class produitService{
 
         try {
             const pathFile = photo_p;
-    
             // Créer un chemin en utilisant path.join
             const directoryPath = path.join(__dirname,'../uploads/', pathFile);
-            console.log(directoryPath); // Affiche le chemin complet du répertoire 'uploads'
     
             await helper.uploadFileAsync(file, directoryPath)
             return pathFile;

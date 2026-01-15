@@ -1,11 +1,7 @@
-const { where } = require('sequelize');
 const Produit = require('../models/produits');
 const multer = require('multer');
 const produitService = require('../service/produit.service');
-const produitRepository = require('../repository/produit.repository');
-const Stock = require('../models/stock');
-const Mouvement = require('../models/mouvement');
-const Depot = require('../models/depot');
+
 
 const storage= multer.memoryStorage();
 const upload = multer({storage: storage});
