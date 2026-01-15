@@ -5,13 +5,17 @@ const tokenContexts = new Map();
 
 exports.verifyToken = (req, res, next) => {
   const token = req.headers['authorization']?.split(' ')[1];
-  
   if (!token) {
     return res.status(403).json({ error: 'Token manquant' });
   }
-  
+    const jwtSecret = process.env.JWT_SECRET;
+
+    if (!jwtSecret) {
+        return res.status(500).json({ error: 'JWT_SECRET non configuré' });
+    }
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    const decoded = jwt.verify(token, jwtSecret);
     
     // Vérifier IP + User-Agent
     const currentContext = `${req.ip}-${req.headers['user-agent']}`;

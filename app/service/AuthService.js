@@ -21,13 +21,14 @@ class AuthService {
     }
 
     async login(email_ut, mdp_ut, req) {
-        const utilisateur = await Utilisateur.findOne({where: { email_ut }});
+        const utilisateur = await Utilisateur.findOne({
+            where: { email_ut }
+        });
 
         if (!utilisateur) {
             throw new Error('Utilisateur non trouvé');
         }
 
-        // Vérifier le mot de passe
         const isValidPassword = await bcrypt.compare(mdp_ut, utilisateur.mdp_ut);
         if (!isValidPassword) {
             throw new Error('Mot de passe incorrect');
@@ -35,17 +36,22 @@ class AuthService {
 
         const role = utilisateur.role;
         
-        // Utiliser JWT_SECRET depuis .env
+        //Vérifier que JWT_SECRET existe
+        const jwtSecret = process.env.JWT_SECRET;
+        
+        if (!jwtSecret) {
+            throw new Error('JWT_SECRET non configuré dans .env');
+        }
+        
         const token = jwt.sign(
             {
                 id: utilisateur.id_ut,
                 role: role
             },
-            process.env.JWT_SECRET,
+            jwtSecret, 
             { expiresIn: '1h' } 
         );
 
-        // Sauvegarder le contexte (IP + User-Agent)
         saveTokenContext(token, req);
 
         return {
@@ -59,8 +65,14 @@ class AuthService {
     }
 
     async authenticate(token) {
+        const jwtSecret = process.env.JWT_SECRET;
+        
+        if (!jwtSecret) {
+            throw new Error('JWT_SECRET non configuré');
+        }
+        
         return this.strategy.authenticate(token, {
-            secretOrkey: process.env.JWT_SECRET
+            secretOrkey: jwtSecret
         });
     }
 
