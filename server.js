@@ -1,5 +1,7 @@
 const express = require('express');
 const cors = require('cors');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
 require('dotenv').config();
 const sequelize = require('./app/config/bd_config'); 
 const defineAssociations = require('./app/models/associations');
@@ -15,27 +17,23 @@ const emplacementRoutes = require('./app/routes/emplacement.routes');
 
 const app = express();
 
-app.use(express.json({ limit: '50mb' }));
-app.use(express.urlencoded({ limit: '50mb', extended: true }));
-app.use(cors({ origin: true, credentials: true }));
+app.use(helmet());
+app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 100 }));
+app.use(express.json({ limit: '10mb' }));
+app.use(cors({ origin: 'https://gestion-stock-front-peach.vercel.app', credentials: true }));
 
 defineAssociations();
-app.get('/', (req, res) => { res.json({ message: 'Bienvenue API Backend'})});
 
+app.use('/api', authRoutes);
 app.use('/api', produitRoutes);
 app.use('/api', depotRoutes);
 app.use('/api', mouvementRoutes);
 app.use('/api', utilisateurRoutes);
 app.use('/api', stockRoutes);
-app.use('/api', authRoutes);
 app.use('/api', emplacementRoutes);
 app.use('/fichier', express.static(__dirname + '/app/uploads/'));
 
-app.use((err, req, res, next) => res.status(500).json({ error: err.message }));
-
 sequelize.authenticate()
   .then(() => sequelize.sync())
-  .then(() => {
-    app.listen(process.env.PORT || 8080, () => console.log('🚀 Serveur OK'));
-  })
-  .catch(err => console.error(err));
+  .then(() => app.listen(process.env.PORT || 8080, () => console.log('🚀 OK')))
+  .catch(console.error);
